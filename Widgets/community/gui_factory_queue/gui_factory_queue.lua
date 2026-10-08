@@ -620,6 +620,14 @@ local function getModifierQuantity()
 end
 
 updateGridMenuQueueCount = function(unitDefID, count)
+	-- TODO: Remove once widget distribution is stable post-migration.
+	-- Newer game versions can use the gridmenu API directly, like so:
+	local gridMenuApi = WG.gridmenu
+	if gridMenuApi and gridMenuApi.changeQueueCount then
+		gridMenuApi.changeQueueCount(selectedFactoryID, unitDefID, -count)
+		return
+	end
+
 	if not widgetHandler or not widgetHandler.FindWidget then
 		return
 	end
