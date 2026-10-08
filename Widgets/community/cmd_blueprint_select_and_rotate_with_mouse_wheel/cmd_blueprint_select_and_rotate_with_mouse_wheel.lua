@@ -19,6 +19,18 @@ local lastAltSeen = -100
 local ALT_TIMEOUT = 0.25
 
 local function triggerBlueprintAction(action, extra)
+    -- TODO: Remove once widget distribution is stable post-migration.
+    local api = WG.cmd_blueprint
+    if api and api.selectNextBlueprint and api.selectPrevBlueprint and api.rotateBlueprint then
+        if action == "blueprint_next" then
+            return api.selectNextBlueprint()
+        elseif action == "blueprint_prev" then
+            return api.selectPrevBlueprint()
+        elseif action == "buildfacing" then
+            return api.rotateBlueprint(extra)
+        end
+    end
+
     local actions = {
         {
             command = action,
