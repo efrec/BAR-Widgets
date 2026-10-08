@@ -37,7 +37,9 @@ local CMD_OPT_CTRL = CMD.OPT_CTRL
 local CMD_OPT_INTERNAL = CMD.OPT_INTERNAL
 
 local gridConfig = VFS.Include("luaui/configs/gridmenu_config.lua")
-local unitBlocking = VFS.Include("luaui/Include/unitBlocking.lua")
+
+local unitBlockingByTeam = VFS.FileExists("common/unitBlocking.lua") -- used like a feature flag, here
+local unitBlocking = VFS.Include(unitBlockingByTeam and "common/unitBlocking.lua" or "luaui/Include/unitBlocking.lua")
 
 local POLL_INTERVAL = 0.12
 local MIN_ICON_SIZE = 18
@@ -132,7 +134,8 @@ local function updateFactoryPagination()
 	end
 
 	local gridOptions = gridConfig.getSortedGridForLab(unitDefID, commands)
-	local blockedUnits = unitBlocking.getBlockedUnitDefs()
+	local blockedUnits = unitBlockingByTeam and unitBlocking.getBlockedUnitDefs(Spring.GetLocalTeamID())
+		or unitBlocking.getBlockedUnitDefs()
 	local visibleOptions = 0
 	for _, option in pairs(gridOptions) do
 		local optionUnitDefID = option.id and -option.id
