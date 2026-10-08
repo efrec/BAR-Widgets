@@ -159,7 +159,8 @@ end
 -- CONSTANTS & CONFIG
 -------------------------------------------------------------------------------
 
-local CONFIG_FILE = "bar_charts_config.lua"
+local CONFIG_FILE = "LuaUI/Config/bar_charts_config.lua"
+local LEGACY_CONFIG_FILE = "bar_charts_config.lua"
 
 -- for less gpu/cpu impact, try 60 for HISTORY_SECONDS, and 100 for RENDER_POINTS, and 5 for MAX_CHART_FPS
 -- also try disabling some charts, the team charts are quite heavy
@@ -2078,8 +2079,13 @@ local function saveConfig()
 end
 
 local function loadConfig()
-    if not VFS.FileExists(CONFIG_FILE) then return {}, {} end
-    local fc = VFS.LoadFile(CONFIG_FILE)
+    local path = CONFIG_FILE
+    if not VFS.FileExists(path) then
+        -- TODO: Remove once widget distribution is stable post-migration.
+        path = LEGACY_CONFIG_FILE
+        if not VFS.FileExists(path) then return {}, {} end
+    end
+    local fc = VFS.LoadFile(path)
     if not fc then return {}, {} end
     local chunk, err = loadstring(fc)
     if not chunk then
